@@ -1,4 +1,1 @@
-sklearn_tools
-=============
-
-A collection of code snippets that I used with Scikit-Learn
+This project provides the tools that may be useful for building and testing models with SciKit Learn.
