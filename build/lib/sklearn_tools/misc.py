@@ -4,6 +4,7 @@ from sklearn.base import TransformerMixin, BaseEstimator
 from functools import partial
 import scipy as sp
 import scipy.sparse
+import numpy as np
 
 
 class NoOpTransformer(object):
@@ -38,3 +39,14 @@ class RowNormalizer(BaseEstimator, TransformerMixin):
         normalizer = sp.sparse.lil_matrix((X.shape[0], X.shape[0]))
         normalizer.setdiag(1.0/X.sum(1))
         return normalizer * X
+
+
+class GBRTInitialEstimator(BaseEstimator, TransformerMixin):
+    def __init__(self, est):
+        self.est = est
+
+    def predict(self, X):
+        return self.est.predict_proba(X)[:, 1][:, np.newaxis]
+
+    def fit(self, X, y):
+        self.est.fit(X, y)
