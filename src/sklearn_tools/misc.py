@@ -26,6 +26,9 @@ class JSONToObjectTransformer(BaseEstimator, TransformerMixin):
         """
         self.func = partial(imap if lazy else map, partial(json.loads))
 
+    def fit(self, X, y=None):
+        return self
+
     def transform(self, X):
         return self.func(X)
 
