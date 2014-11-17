@@ -1,10 +1,7 @@
 from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
 import numpy as np
 import numpy.random.mtrand
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-import theano
-import theano.tensor as T
-from theano.tensor.shared_randomstreams import RandomStreams
+from sklearn.preprocessing import LabelEncoder
 from SdA import SdA
 import logging
 

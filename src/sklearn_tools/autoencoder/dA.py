@@ -20,7 +20,7 @@
 
 import sys
 import numpy
-from utils import *
+from .utils import *
 
 
 class dA(object):

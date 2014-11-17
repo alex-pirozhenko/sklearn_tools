@@ -17,8 +17,8 @@
 
 import sys
 import numpy
-from HiddenLayer import HiddenLayer
-from LogisticRegression import LogisticRegression
+from .HiddenLayer import HiddenLayer
+from .LogisticRegression import LogisticRegression
 from dA import dA
 from utils import *
 
