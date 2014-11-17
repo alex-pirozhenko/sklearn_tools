@@ -11,6 +11,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
+__all__ = ['StackedDenoisingAutoencoder']
 
 # TODO: l1/l2 regularization
 class StackedDenoisingAutoencoder(BaseEstimator, TransformerMixin, ClassifierMixin):
