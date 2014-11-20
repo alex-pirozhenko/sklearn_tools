@@ -48,7 +48,7 @@ class GBRTInitialEstimator(BaseEstimator, TransformerMixin):
         self.est = est
 
     def predict(self, X):
-        return self.est.predict_proba(X)[:, 1][:, np.newaxis]
+        return self.est.predict_proba(X)
 
     def fit(self, X, y):
         self.est.fit(X, y)
