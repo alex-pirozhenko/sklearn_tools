@@ -1,5 +1,6 @@
 from itertools import imap
 import json
+import os
 from sklearn.base import TransformerMixin, BaseEstimator
 from functools import partial
 import scipy as sp
@@ -52,3 +53,9 @@ class GBRTInitialEstimator(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y):
         self.est.fit(X, y)
+
+
+def which(file):
+    for path in os.environ["PATH"].split(":"):
+        if os.path.exists(os.path.join(path, file)):
+            return os.path.join(path, file)
