@@ -1,23 +1,13 @@
-from sklearn.base import BaseEstimator
-import pandas as pd
-
-import pandas as pd
 import cPickle
-import numpy as np
 import time
 import wabbit_wappa as ww
+from sklearn.base import TransformerMixin, BaseEstimator
+import numpy as np
+import pandas as pd
 
 
 def sigmoid(x):
     return 1 / (1 + np.exp(0 - x))
-
-
-from collections import defaultdict
-from functools import partial
-from sklearn.base import TransformerMixin, BaseEstimator
-import numpy as np
-import pandas as pd
-from pandas.core.series import Series
 
 
 class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
