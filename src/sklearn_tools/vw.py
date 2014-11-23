@@ -10,20 +10,27 @@ def sigmoid(x):
     return 1 / (1 + np.exp(0 - x))
 
 
+@np.vectorize
+def field_formatter(value, col_name='', sep=' '):
+    if value != '' and value is not None:
+        return col_name + sep + value + ' '
+    else:
+        return ' '
+
+
 class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
 
-    def __init__(self, categorical_columns, tag_column=None, nan_value=-1, dump_to=None):
+    def __init__(self, categorical_columns, dump_to=None):
         super(DataFrameToVWTransformer, self).__init__()
         self.categorical_columns = categorical_columns
-        self.tag_column = tag_column
-        self.nan_value = nan_value
         self.dump_to = dump_to
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None, tag=None):
         """
         Remember y
         """
         self.y = y
+        self.tag = tag
         return self
 
     def transform(self, X):
@@ -32,27 +39,19 @@ class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
         """
         X = X.copy(deep=False)
         columns = X.columns
-        if not (self.y is None):
-            X['__label'] = self.y
-            use_y = True
-        else:
-            use_y = False
         X['__res'] = ''
         if not (self.y is None):
-            X['__res'] += X['__label']
+            X['__res'] += self.y
             X['__res'] += ' '
-        X['__res'] += ('' if not self.tag_column else X[self.tag_column].values.astype(str))
+        if not (self.tag is None):
+            X['__res'] += self.tag
         X['__res'] += '|c '
         for c in self.categorical_columns:
-            X['__res'] += c + '_'
-            X['__res'] += ('' if not self.tag_column else X[self.tag_column].values.astype(str))
-            X['__res'] += ' '
+            X['__res'] += field_formatter(X[c], col_name=c, sep='_')
         X['__res'] += '|i '
         for c in columns:
-            if c not in self.categorical_columns and c != self.tag_column:
-                X['__res'] += c + ':'
-                X['__res'] += ('' if not self.tag_column else X[self.tag_column].values.astype(str))
-                X['__res'] += ' '
+            if c not in self.categorical_columns:
+                X['__res'] += field_formatter(X[c], col_name=c, sep=':')
 
         X = X[['__res']]
 
