@@ -41,10 +41,10 @@ class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
         columns = X.columns
         X['__res'] = ''
         if not (self.y is None):
-            X['__res'] += self.y
+            X['__res'] += self.y.astype(str)
             X['__res'] += ' '
         if not (self.tag is None):
-            X['__res'] += self.tag
+            X['__res'] += self.tag.astype(str)
         X['__res'] += '|c '
         for c in self.categorical_columns:
             X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep='_')
