@@ -31,38 +31,34 @@ class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
         :type X: pd.DataFrame
         """
         X = X.copy(deep=False)
+        columns = X.columns
         if not (self.y is None):
             X['__label'] = self.y
             use_y = True
         else:
             use_y = False
-        X['__tag'] = ('' if not self.tag_column else X[self.tag_column].values.astype(str))
-        X['__tag'] += '|c'
-        if self.tag_column:
-            del X[self.tag_column]
-        X = X.reindex(
-            columns=(['__label'] if use_y else []) +
-                    ['__tag'] +
-                    [_ for _ in X.columns if _ not in {'__label', '__tag'}]
-        )
-        columns = list(enumerate(X.columns)) # idx -> col_name
-        X = X.as_matrix()
-        nans = X == self.nan_value
-        if use_y:
-            nans[:,0] = False
-        X = X.astype(str)
-        X[nans] = ''
-        for i, col in columns:
-            if i < (2 if use_y else 1):
-                continue
-            elif col in self.categorical_columns:
-                X[:, i] = np.vectorize(lambda x: (col + '_' + x) if x else '')(X[:, i])
-            else:
-                X[:, i] = np.vectorize(lambda x: (col + ':' + x) if x else '')(X[:, i])
+        X['__res'] = ''
+        if not (self.y is None):
+            X['__res'] += X['__label']
+            X['__res'] += ' '
+        X['__res'] += ('' if not self.tag_column else X[self.tag_column].values.astype(str))
+        X['__res'] += '|c '
+        for c in self.categorical_columns:
+            X['__res'] += c + '_'
+            X['__res'] += ('' if not self.tag_column else X[self.tag_column].values.astype(str))
+            X['__res'] += ' '
+        X['__res'] += '|i '
+        for c in columns:
+            if c not in self.categorical_columns and c != self.tag_column:
+                X['__res'] += c + ':'
+                X['__res'] += ('' if not self.tag_column else X[self.tag_column].values.astype(str))
+                X['__res'] += ' '
+
+        X = X[['__res']]
+
         if self.dump_to:
-            np.savetxt(self.dump_to, X, fmt="%s", delimiter=' ')
-        else:
-            return np.apply_along_axis(' '.join, 1, X)
+            X.to_csv(self.dump_to, header=False, index=False)
+        return X['__res'].values
 
 
 
