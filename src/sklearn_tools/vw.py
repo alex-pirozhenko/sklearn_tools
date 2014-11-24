@@ -20,10 +20,11 @@ def field_formatter(value, col_name='', sep=' '):
 
 class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
 
-    def __init__(self, categorical_columns, dump_to=None):
+    def __init__(self, categorical_columns, dump_to=None, namespaces=None):
         super(DataFrameToVWTransformer, self).__init__()
         self.categorical_columns = categorical_columns
         self.dump_to = dump_to
+        self.namespaces = namespaces
 
     def fit(self, X, y=None, tag=None):
         """
@@ -45,16 +46,25 @@ class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
             X['__res'] += ' '
         if not (self.tag is None):
             X['__res'] += self.tag.astype(str)
+        if self.namespaces:
+            for name, column_names in self.namespaces.items():
+                if column_names:
+                    X['__res'] += '|%s ' % name
+                    for c in column_names:
+                        if c in self.categorical_columns:
+                            X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep='_')
+                        else:
+                            X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep=':')
+                        columns.remove(c)
+
         X['__res'] += '|c '
-        for c in self.categorical_columns:
+        for c in [_ for _ in self.categorical_columns if _ in columns]:
             X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep='_')
+            columns.remove(c)
         X['__res'] += '|i '
         for c in columns:
-            if c not in self.categorical_columns:
-                X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep=':')
-
+            X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep=':')
         X = X[['__res']]
-
         if self.dump_to:
             X.to_csv(self.dump_to, header=False, index=False)
         return X['__res']
