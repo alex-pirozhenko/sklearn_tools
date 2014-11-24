@@ -26,6 +26,7 @@ class XGBoostClassifier(BaseEstimator, TransformerMixin):
     def __init__(self,
                  n_jobs=1,
                  model=None,
+                 objective='multi:softprob',
                  txt_model=None, txt_model_feature_map=None,
                  n_iter=10,
                  params=None,
@@ -41,7 +42,7 @@ class XGBoostClassifier(BaseEstimator, TransformerMixin):
         self.txt_model = txt_model
         self.txt_model_feature_map = txt_model_feature_map
         self.params = params if params else {}
-        self.params['objective'] = 'multi:softprob'
+        self.objective = objective
         self.n_class = n_class
         self.plist = plist if plist else []
         self.n_iter = n_iter
@@ -66,6 +67,7 @@ class XGBoostClassifier(BaseEstimator, TransformerMixin):
         self.params['num_class'] = self.n_class
         self.params['nthread'] = self.n_jobs
         self.params['silent'] = 0 if self.silent else 1
+        self.params['objective'] = self.objective
         self.booster = xb.train(self.params, dtrain, self.n_iter, [(dtest, 'eval')])
         if self.model:
             self.booster.save_model(self.model)
