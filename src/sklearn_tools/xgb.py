@@ -32,6 +32,7 @@ class XGBoostClassifier(BaseEstimator, TransformerMixin):
                  n_class=None,
                  plist=None,
                  missing=-1,
+                 silent=True,
                  validation_percent=0.1
                  ):
         super(XGBoostClassifier, self).__init__()
@@ -49,6 +50,7 @@ class XGBoostClassifier(BaseEstimator, TransformerMixin):
         self.booster = None
         self.enc = LabelEncoder()
         self.classes_ = None
+        self.silent = silent
 
     def fit(self, X, y, sample_weight=None):
         self.enc = self.enc.fit(y)
@@ -63,6 +65,7 @@ class XGBoostClassifier(BaseEstimator, TransformerMixin):
         dtest = xb.DMatrix(X_val, label=y_val, missing=self.missing, weight=sample_weight_val)
         self.params['num_class'] = self.n_class
         self.params['nthread'] = self.n_jobs
+        self.params['silent'] = 0 if self.silent else 1
         self.booster = xb.train(self.params, dtrain, self.n_iter, [(dtest, 'eval')])
         if self.model:
             self.booster.save_model(self.model)
