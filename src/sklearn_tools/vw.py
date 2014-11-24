@@ -57,7 +57,7 @@ class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
 
         if self.dump_to:
             X.to_csv(self.dump_to, header=False, index=False)
-        return X['__res'].values
+        return X['__res']
 
 
 
