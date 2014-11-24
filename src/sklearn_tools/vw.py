@@ -39,7 +39,7 @@ class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
         :type X: pd.DataFrame
         """
         X = X.copy(deep=False)
-        columns = X.columns
+        columns = list(X.columns)
         X['__res'] = ''
         if not (self.y is None):
             X['__res'] += self.y.astype(str)
