@@ -56,14 +56,16 @@ class DataFrameToVWTransformer(BaseEstimator, TransformerMixin):
                         else:
                             X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep=':')
                         columns.remove(c)
-
-        X['__res'] += '|c '
-        for c in [_ for _ in self.categorical_columns if _ in columns]:
-            X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep='_')
-            columns.remove(c)
-        X['__res'] += '|i '
-        for c in columns:
-            X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep=':')
+        if [_ for _ in self.categorical_columns if _ in columns]:
+            X['__res'] += '|c '
+            for c in [_ for _ in self.categorical_columns if _ in columns]:
+                X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep='_')
+                columns.remove(c)
+        if columns:
+            X['__res'] += '|i '
+            for c in columns:
+                X['__res'] += field_formatter(X[c].astype(str), col_name=c, sep=':')
+                columns.remove(c)
         X = X[['__res']]
         if self.dump_to:
             X.to_csv(self.dump_to, header=False, index=False)
