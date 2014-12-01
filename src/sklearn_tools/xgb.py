@@ -68,7 +68,7 @@ class XGBoostClassifier(BaseEstimator, TransformerMixin):
         self.params['nthread'] = self.n_jobs
         self.params['silent'] = 0 if self.silent else 1
         self.params['objective'] = self.objective
-        self.booster = xb.train(self.params, dtrain, self.n_iter, [(dtest, 'eval')])
+        self.booster = xb.train(self.params, dtrain, self.n_iter, [(dtest, 'eval'), (dtrain, 'eval')])
         if self.model:
             self.booster.save_model(self.model)
         if self.txt_model:
